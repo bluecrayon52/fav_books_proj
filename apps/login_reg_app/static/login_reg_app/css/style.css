@@ -1,0 +1,17 @@
+*{
+    margin: 0px;
+    padding: 0px;
+    /* outline: 1px dotted red; */
+}
+
+.wrap {
+    margin: 0 auto;
+    width: 1200px;
+    padding: 40px;
+}
+
+.message_holder {
+    max-height: 400px;
+    overflow-y: scroll;
+    text-align: start;
+}

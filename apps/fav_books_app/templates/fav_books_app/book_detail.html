@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    {% load static%}
+    <link rel="stylesheet" href="{% static 'fav_books_app/css/style.css' %}">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+    <title>All Books</title>
+</head>
+<body>
+    <div class="wrap">
+    <div class="row">
+            <h1 class="col"><a href="/books" class="text-body">Bukuzie's Books</a></h1>
+            <div class="col d-flex mr-1 justify-content-end">
+                <h3 class="mt-1 mr-5">Welcome, {{user.first_name}}!</h3>
+                <a href="/logout" class="mb-3 btn btn btn-dark">Logout</a>
+            </div>
+        </div>
+        <hr>
+        <div class="card-group">
+            <div class="card border-0 mr-5">
+                <div class="card-body">
+                    <div class="row">
+                        <h4 class="col mb-0 card-title">{{book.title}}</h4>
+                    </div>
+                    <hr>
+                    {% if book.added_by.id == user.id %}
+                    <form action='/books/{{book.id}}/update' method='post'>
+                        {% csrf_token %}
+                        <div class="form-group row">
+                            <label for="title">Title:</label>
+                            {% for msg in messages %}
+                                {% if 'mod_title' in msg.extra_tags %}
+                                <small class="text-danger mt-1 ml-2 row">{{msg}}</small>
+                                {% endif %}
+                            {% endfor %}
+                            <input type="text" class="form-control" value="{{book.title}}" id="title" name="title">      
+                        </div>
+                        <p><span class="text-info">Added By: </span>You</p>
+                        <p><span class="text-info">Added On: </span>{{book.created_at}}</p>
+                        <p><span class="text-info">Last Updated On: </span>{{book.updated_at}}</p>
+                        <div class="form-group row">
+                            <label for="description">Description:</label>
+                            {% for msg in messages %}
+                                {% if 'mod_desc' in msg.extra_tags %}
+                                <small class="text-danger mt-1 ml-2 row">{{msg}}</small>
+                                {% endif %}
+                            {% endfor %}
+                            <textarea type="text" rows="4" class="form-control" id="description" name="description">{{book.description}}</textarea>
+                        </div>
+                        <div class="row d-flex justify-content-end">
+                            <button type="submit" class="btn btn-info">Update</button>
+                            <a href="/books/{{book.id}}/delete" class="btn ml-2 btn-secondary">Delete</a>
+                        </div>
+                    </form>
+                    {% else %}
+                    <div class="ml-2">
+                    <p><span class="text-info">Added By: </span>{{book.added_by.first_name}} {{book.added_by.last_name}}</p>
+                    <p><span class="text-info">Added On: </span>{{book.created_at}}</p>
+                    <p><span class="text-info">Last Updated On: </span>{{book.updated_at}}</p>
+                    <p><span class="text-info">Description: </span>{{book.description}}</p>
+                    </div>
+                    {% endif %}
+                    <hr>
+                </div>
+            </div>
+            <div class="card border-0 mr-5">
+                <div class="card-body">
+                    <div class="row">
+                        <h4 class="col mb-3 card-title">Users Who Like This Book:</h4>
+                    </div>
+                    <!-- <hr> -->
+                    <ul class="list-group list-group-flush">
+                        {% for u in book.liked_by.all %}
+                            {% if u.id == user.id %}
+                            <li class="list-group-item">
+                                <div class="row">
+                                    <p class="col">You</p>
+                                    <a class="col-3 text-info" href="/books/{{book.id}}/un_favorite_detail">Un-Favorite</a>
+                                </div>
+                            </li>
+                            {% else %}
+                            <li class="list-group-item">{{u.first_name}} {{u.last_name}}</li>
+                            {% endif %}
+                        {% endfor %}
+                    </ul>
+                    {% if book.id not in favorite_ids %}
+                    <div class="col ml-5 d-flex justify-content-end">
+                        <a class="ml-3 btn btn-secondary" href="/books/{{book.id}}/add_favorite_detail">Add to Favorites</a>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
